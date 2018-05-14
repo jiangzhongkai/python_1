@@ -33,7 +33,7 @@ class SGA(object):
       self.population_size=population_size
       self.precsion=precsion
       self.max_generate=max_generate
-      self.bound=bounds
+      self.bounds=bounds
       pass
 
     def initial_pop(self):

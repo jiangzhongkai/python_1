@@ -25,3 +25,9 @@ class SGA(object):
         pass
 
     def initial_pop(self,):
+        pass
+
+    def cross(self):
+        pass
+    def mute(self):
+        pass

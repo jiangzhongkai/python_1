@@ -64,6 +64,6 @@ class SGA(object):
 
 
 if __name__=="__main__":
-    lstm_sga=SGA(cross_p=0.2,mute_p=0.01,population_size=100000,pop_ac=le-8)
+    lstm_sga=SGA(cross_p=0.2,mute_p=0.01,population_size=100000,pop_ac=1e-8)
     lstm_sga.initial_pop()
     pass

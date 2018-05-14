@@ -1,0 +1,75 @@
+lstm+bayes
+
+power_demand
+Accuracy: 96.88%
+Precision: 100.00%
+Recall: 94.12%
+F1: 96.97%
+
+loopsensor
+Accuracy: 95.29%
+Precision: 93.18%
+Recall: 97.62%
+F1: 95.35%
+
+
+
+landsensor
+Accuracy: 97.06%
+Precision: 91.67%
+Recall: 100.00%
+F1: 95.65%
+
+
+
+
+lstm 
+power 20+20
+Precision: 84.62%
+Accuracy: 90.48%
+Recall: 100.00%
+F1: 91.67%
+
+
+
+loopsensor 10+10
+Precision: 86.67%
+Accuracy: 87.04%
+Recall: 89.66%
+F1: 88.14%
+
+
+landsensor 10+20
+Precision: 85.91%
+Accuracy: 81.82%
+Recall: 76.92%
+F1: 81.17%
+
+
+
+dnn 10+20+10
+
+power_demand
+Precision: 84.29%
+Accuracy: 85.29%
+Recall: 94.21%
+F1: 88.97%
+
+
+
+
+loopsensor
+Precision: 78.95%
+Accuracy: 79.44%
+Recall: 81.82%
+F1: 80.36%
+
+
+
+landsensor
+Precision: 88.89%
+Accuracy: 81.82%
+Recall: 72.73%
+F1: 80.00%
+
+

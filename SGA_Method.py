@@ -9,30 +9,38 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 import sys
+import random
 
+"""
+1.种群大小->染色体->基因变化
+"""
 
 class SGA(object):
     """
     一个简单的遗传算法来实现LSTM在不同机器之间的运行，加速运行时间
     """
-    def __init__(self,cross_p,mute_p,population_size,pop_ac):
-        """
-        :param cross_p: 交叉概率
-        :param mute_p: 变异概率
-        :param population_size:种群大小
-        :param pop_ac: 精确度
-        """
-        self.cross_p=cross_p
-        self.mute_p=mute_p
-        self.population_size=population_size
-        self.pop_ac=pop_ac
-        pass
+    def __init__(self,cross_p,mute_p,population_size,precsion,max_generate,bounds):
+      """
+      :param cross_p: 交叉概率
+      :param mute_p: 变异概率
+      :param population_size: 种群大小
+      :param precsion: 精确度
+      :param max_generate: 最大的迭代次数
+      :param bound:变量范围
+      """""
+      self.cross_p=cross_p
+      self.mute_p=mute_p
+      self.population_size=population_size
+      self.precsion=precsion
+      self.max_generate=max_generate
+      self.bound=bounds
+      pass
 
     def initial_pop(self):
         """
-        初始化种群
         :return:
         """
+
         pass
 
     def update_bestSolution(self,solution,bestsolution):
@@ -56,6 +64,7 @@ class SGA(object):
         使用轮盘赌的原则来选择交叉的染色体
         :return:
         """
+
         pass
 
     def cross(self):
@@ -70,6 +79,7 @@ class SGA(object):
         进行变异
         :return:
         """
+
         pass
 
 

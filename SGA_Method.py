@@ -8,6 +8,8 @@ import os
 import re
 import numpy as np
 import matplotlib.pyplot as plt
+import sys
+
 
 class SGA(object):
     """
@@ -29,6 +31,15 @@ class SGA(object):
     def initial_pop(self):
         """
         初始化种群
+        :return:
+        """
+        pass
+
+    def update_bestSolution(self,solution,bestsolution):
+        """
+        更新最佳的解决方案
+        :param solution:原始的方案
+        :param bestsolution: 最佳的方案
         :return:
         """
         pass
@@ -60,7 +71,6 @@ class SGA(object):
         :return:
         """
         pass
-
 
 
 if __name__=="__main__":

@@ -1,10 +1,10 @@
-lstm+bayes
-
+LSTM+Bayes
 power_demand
 Accuracy: 96.88%
 Precision: 100.00%
 Recall: 94.12%
 F1: 96.97%
+
 
 loopsensor
 Accuracy: 95.29%

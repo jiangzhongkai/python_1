@@ -12,8 +12,13 @@ import sys
 import random
 
 """
+思想:
 1.种群大小->染色体->基因变化
+2.写一个生成染色体类
+3.写一个遗传算法类,
+4.将染色体类生成的多个染色体放到种群中去
 """
+
 
 class SGA(object):
     """
@@ -34,6 +39,10 @@ class SGA(object):
       self.precsion=precsion
       self.max_generate=max_generate
       self.bounds=bounds
+
+      self.best=[0]*max_generate
+      self.pop=[]
+
       pass
 
     def initial_pop(self):
@@ -81,6 +90,18 @@ class SGA(object):
         """
 
         pass
+
+class Choromones(object):
+    """
+    生成染色体
+    """
+    def __init__(self):
+        """
+
+        """
+        pass
+
+
 
 
 if __name__=="__main__":

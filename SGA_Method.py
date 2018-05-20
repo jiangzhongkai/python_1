@@ -250,8 +250,8 @@ class SGA(object):
         :param indivduals:
         :return:
         """
-        w1 = indivduals[1:self.compute_param_num()[1]]
-        b1 = indivduals[self.compute_param_num()[1] + 1:self.compute_param_num()[0]]
+        w1 = indivduals[0:self.compute_param_num()[1]]
+        b1 = indivduals[self.compute_param_num()[1]:self.compute_param_num()[0]]
 
         new_w1=np.reshape(w1,newshape=(1,self.hidden_num))
         new_b1=np.reshape(b1,newshape=(self.hidden_num))
@@ -395,6 +395,16 @@ if __name__=="__main__":
     x=bestchrom
 
     #把最优初始阀值权值赋予给网络预测
+    #获取最优网络权值和阀值，并且改变形状以适应神经网络训练的需求
+    new_w1,new_b1=sga.reshape_weight_bias(x)
+
+    #将最优权值保存起来,以便在LSTM神经网络下进行训练
+    with open("w_b_data.txt","w") as f:
+        f.write(new_w1+"\n")
+        f.write(new_b1+"\n")
+
+
+
 
 
 

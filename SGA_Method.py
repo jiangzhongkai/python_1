@@ -267,7 +267,6 @@ class SGA(object):
         # initial all variables
         init = tf.global_variables_initializer()
         sess.run(init)
-
         sum_fitness=[]
         # epoch training
         for i in range(epoch):

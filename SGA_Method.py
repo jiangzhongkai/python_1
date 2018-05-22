@@ -81,8 +81,10 @@ class SGA(object):
         # step_2:计算每个个体的适应度
         for i in range(pop_size):
             temp_fitness_val=self.fitness_fun(individuals[i])
+            #由于这里适应误差值作为适应度值,所以越小越好
+            temp_fitness_val=1.0/temp_fitness_val
             fitness_val.append(temp_fitness_val)
-        #step_3:染色体选择的概率
+        #step_3:计算所有染色体的适应度以及染色体被选择的概率
         per_individual_select_prob=[]
         for i in range(len(fitness_val)):
             per_individual_select_prob.append(fitness_val[i]/sum(fitness_val))
@@ -115,45 +117,44 @@ class SGA(object):
                     break
         return new_chrom
 
-
-        #step_1:求适应度值的倒数
-        fitness_val=[]  #存储当前种群所有的个体适应值
-        #计算每个个体的适应度值
-        for i in range(pop_size):
-            fitness_val.append(self.fitness_fun(individuals=individual["chrom"][i]))
-
-        reverse_fitness_val=[]  #用于存储每个个体适应度的倒数,10表示系数
-        for i in range(len(fitness_val)):
-            reverse_fitness_val.append(10./fitness_val[i])
-
-        #step_2:个体选择概率
-        sum_reverse_fitness_val=sum(reverse_fitness_val)
-        #存储每一个个体被选择的概率
-        per_individual_select_pro=[]
-        for i in range(len(sum_reverse_fitness_val)):
-            per_individual_select_pro.append(reverse_fitness_val[i]/sum_reverse_fitness_val)
-
-        #step_3:采用轮盘赌法选择新的个体
-        index=[] #用于存储适应度高个体的索引下标
-        for i in range(pop_size):
-            pick=np.random.rand()  #随机产生一个[0,1)的随机数
-            while pick==0:
-                pick=np.random.rand()
-            for j in range(pop_size):
-                pick=pick-per_individual_select_pro[j]
-                if pick<0:
-                    index.append(j) ###
-                    break
-        #step_4:得到被选择的优秀个体的适应度值和及对应的实数编码值
-        new_chrom={
-            "chrom":[],
-            "fitness":[]
-        }
-        #返回新的染色体
-        for i in range(len(index)):
-            new_chrom["chorm"].append(individual["chrom"][index[i]])
-            new_chrom["fitness"].append(individual["fitness"][0][index[i]])
-        return new_chrom
+        # #step_1:求适应度值的倒数
+        # fitness_val=[]  #存储当前种群所有的个体适应值
+        # #计算每个个体的适应度值
+        # for i in range(pop_size):
+        #     fitness_val.append(self.fitness_fun(individuals=individual["chrom"][i]))
+        #
+        # reverse_fitness_val=[]  #用于存储每个个体适应度的倒数,10表示系数
+        # for i in range(len(fitness_val)):
+        #     reverse_fitness_val.append(10./fitness_val[i])
+        #
+        # #step_2:个体选择概率
+        # sum_reverse_fitness_val=sum(reverse_fitness_val)
+        # #存储每一个个体被选择的概率
+        # per_individual_select_pro=[]
+        # for i in range(len(sum_reverse_fitness_val)):
+        #     per_individual_select_pro.append(reverse_fitness_val[i]/sum_reverse_fitness_val)
+        #
+        # #step_3:采用轮盘赌法选择新的个体
+        # index=[] #用于存储适应度高个体的索引下标
+        # for i in range(pop_size):
+        #     pick=np.random.rand()  #随机产生一个[0,1)的随机数
+        #     while pick==0:
+        #         pick=np.random.rand()
+        #     for j in range(pop_size):
+        #         pick=pick-per_individual_select_pro[j]
+        #         if pick<0:
+        #             index.append(j) ###
+        #             break
+        # #step_4:得到被选择的优秀个体的适应度值和及对应的实数编码值
+        # new_chrom={
+        #     "chrom":[],
+        #     "fitness":[]
+        # }
+        # #返回新的染色体
+        # for i in range(len(index)):
+        #     new_chrom["chorm"].append(individual["chrom"][index[i]])
+        #     new_chrom["fitness"].append(individual["fitness"][0][index[i]])
+        # return new_chrom
 
     def cross(self,len_chrom,chrom,bound,pop_size,p_cross):
         """
@@ -385,7 +386,7 @@ class SGA(object):
         用于测试所生成的浮点值是否在合理范围之类
         :param len_chrom: 染色体长度
         :param bound: 边界范围
-        :param chrom: 种群信息
+        :param chrom: 染色体信息,既可以是种群所有染色体，也可以是单个染色体
         :return:
         """
         if chrom<=bound[0][0] and chrom>=bound[1][0]:

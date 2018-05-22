@@ -17,6 +17,7 @@ import tensorflow as tf
 from copy import copy
 from LSTM import *
 
+
 """
 思想:
 1.种群大小->染色体->基因
@@ -25,21 +26,19 @@ from LSTM import *
 4.将染色体类生成的多个染色体放到种群中去
 5.利用遗传算法寻找最优解能否减少寻解的时间？
 6.通过遗传算法获得结果传给神经网络是不是会更加快呢？
-
 交叉,变异，适应度，种群，染色体，基因，选择
 参数编码,使用实数编码
 初始群体的设计
 适应度函数的设计
 遗传操作设计(选择,交叉,变异)
 控制参数的设定
-
-使用遗传算法来优化参数，然后再进行训练，最后再实现tensorflows的多机并行。
-利用染色体的每一位来表示阀值或权值。然后确定种群大小，即一个种群有多少个个体。确定这些之后就可以进化物种
-所谓使用的遗传算法来优化神经网络，其实是优化神经网络的初始节点值，不再是随机的初始值。
-利用染色体中的每一位来代替LSTM神经网络的权值和阀值
 """
 """
 思路：
+    使用遗传算法来优化参数，然后再进行训练，最后再实现tensorflows的多机并行。
+    利用染色体的每一位来表示阀值或权值。然后确定种群大小，即一个种群有多少个个体。确定这些之后就可以进化物种
+    所谓使用的遗传算法来优化神经网络，其实是优化神经网络的初始节点值，不再是随机的初始值。
+    利用染色体中的每一位来代替LSTM神经网络的权值和阀值 
     设置种群数目和优化目标,对神经元初始值与阀值进行实数编码，然后计算各种群适应度，
     选择操作，交叉操作，变异操作，如果没有达到优化目标，则继续上面的步骤；否则将阀值和权值传入到神经网络，
     计算误差，权值和阀值更新，是否满足结束条件,如果没有，则继续上面的步骤，否则进行模型的准确性的验证。
@@ -67,12 +66,56 @@ class SGA(object):
         self.hidden_num=hidden_num
         pass
 
-    def select(self,pop_size,individual):
+
+    def select(self,pop_size,individuals):
         """
         :param pop_size: 种群规模
-        :param individual: 种群信息
+        :param individuals: 种群信息
         :return: 返回选择后的新种群
         """
+    #======================================================
+        #采用的轮盘赌选择原则
+    #####################################################
+        #step_1:初始化种群
+        fitness_val=[]
+        # step_2:计算每个个体的适应度
+        for i in range(pop_size):
+            temp_fitness_val=self.fitness_fun(individuals[i])
+            fitness_val.append(temp_fitness_val)
+        #step_3:染色体选择的概率
+        per_individual_select_prob=[]
+        for i in range(len(fitness_val)):
+            per_individual_select_prob.append(fitness_val[i]/sum(fitness_val))
+
+        #step_4:计算种群中每个个体的被选中的累积概率
+        caculate_prob=[]
+        temp_sum_prob=[]  #临时存储每个个体的累计概率
+        for j in range(len(fitness_val)):
+            temp_sum_prob.append(per_individual_select_prob[j])
+            caculate_prob.append(sum(temp_sum_prob))
+
+        #step_5:根据累计概率来选择染色体
+        new_chrom={
+            "fitness":[],
+            "chrom":[]
+        }
+        for i in range(pop_size):
+            pick=np.random.rand()
+            while pick==0:
+                pick=np.random.rand()
+
+            for j in range(len(caculate_prob)):
+                if pick<caculate_prob[0]:
+                    new_chrom["chrom"].append(individuals[0])
+                    new_chrom["fitness"].append(fitness_val[0])
+                    break
+                elif pick<=caculate_prob[j] and pick>=caculate_prob[j-1]:
+                    new_chrom["chrom"].append(individuals[j])
+                    new_chrom["fitness"].append(fitness_val[j])
+                    break
+        return new_chrom
+
+
         #step_1:求适应度值的倒数
         fitness_val=[]  #存储当前种群所有的个体适应值
         #计算每个个体的适应度值
@@ -209,15 +252,15 @@ class SGA(object):
                 fg=np.random.rand()*(1-num/self.max_gen)**2
                 if pick>0.5:
                     #chorm表示种群中染色体的集合
-                    chrom[index][mute_pos]=chrom[index][mute_pos]+(chrom[index][mute_pos]-bound[mute_pos][2])*fg
+                    chrom[index][mute_pos]=chrom[index][mute_pos]+(chrom[index][mute_pos]-bound[1][0])*fg
                     # chrom[i,pos]=chrom[i,pos]+(chrom[i,pos]-bound[pos,2])*fg
                 else:
-                    chrom[index][mute_pos]=chrom[index][mute_pos]+(bound[mute_pos][1]-chrom[index][mute_pos])*fg
+                    chrom[index][mute_pos]=chrom[index][mute_pos]+(bound[0][0]-chrom[index][mute_pos])*fg
                     # chrom[i,pos]=chrom[i,pos]+(bound[pos,1]-chrom[i,pos])*fg
 
                 #验证解的可行性
                 flag=self.test(bound=bound,chrom=chrom[index][mute_pos])
-        return chrom
+        return chrom  #返回一个种群
 
 
     def reshape_weight_bias(self,individual):
@@ -229,6 +272,7 @@ class SGA(object):
         b1 = individual[0][self.compute_param_num()[1]:self.compute_param_num()[0]]
         new_w1=np.reshape(w1,newshape=[1,4]).astype(dtype=np.float32)
         new_b1=np.reshape(b1,newshape=[4]).astype(dtype=np.float32)
+        print(new_w1)
         # print(type(new_w1))
         return new_w1,new_b1
 
@@ -244,7 +288,7 @@ class SGA(object):
         """
         #step_1:提取参数,w1,b1
         new_w1,new_b1=self.reshape_weight_bias(individual)
-
+        # print(new_w1.shape,new_b1.shape)
         train_x, train_y, test_x, test_y = rnn_data('./power_data.txt')
         # print(train_y.shape,train_x.shape)
         # Building Graphs
@@ -268,12 +312,16 @@ class SGA(object):
         init = tf.global_variables_initializer()
         sess.run(init)
         sum_fitness=[]
-        # epoch training
-        for i in range(epoch):
-            for start, end in zip(range(0, len(train_x), batch_size),range(batch_size, len(train_x) + 1, batch_size)):
 
+        # train_losses=[]
+        # test_losses=[]
+
+        # epoch training
+        for i in range(2):
+            for start, end in zip(range(0, len(train_x), batch_size),range(batch_size, len(train_x) + 1, batch_size)):
                 sess.run(cost, feed_dict={X: train_x[start:end],Y: train_y[start:end]})  # 分离出batchsize个数据去迭代运算
                 temp_fitness=sess.run(cost,feed_dict={X:train_x[start:end],Y:train_y[start:end]})
+                print("temp_fitness:{}".format(temp_fitness))
                 sum_fitness.append(temp_fitness)
 
             # cost = sess.run(cost, feed_dict = {X: test_x, Y: test_y})		# 之前犯错的地方，就是因为cost操作被再次赋值，导致出错！
@@ -287,6 +335,7 @@ class SGA(object):
             #
             #     print('the epoch' + str(i + 1) + ': train loss = ' + '{:.9f}'.format(loss1)
             #           + ', test loss = ' + '{:.9f}'.format(loss2))
+        print("========",np.sum(sum_fitness)/epoch*1.0)
         return np.sum(sum_fitness)/epoch*1.0
 
     def bestfitness(self,individual):
@@ -426,6 +475,7 @@ if __name__=="__main__":
 #step1:先用遗传算法求初始权值的最优解
 #step2:利用遗传算法得到近似最优解赋值给网络权值和阀值
 #step3:比较实验结果与分析
+
 
 
 
